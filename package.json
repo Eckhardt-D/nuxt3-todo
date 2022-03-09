@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "vitest run --coverage",
+    "dev": "nuxi dev",
+    "build": "nuxi build",
+    "start": "node .output/server/index.mjs"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "5",
+    "@types/uuid": "^8.3.4",
+    "c8": "^7.11.0",
+    "nuxt3": "latest",
+    "vitest": "^0.6.0"
+  },
+  "dependencies": {
+    "@heroicons/vue": "^1.0.6",
+    "@pinia/nuxt": "^0.1.8",
+    "pinia": "^2.0.11",
+    "uuid": "^8.3.2"
+  }
+}
