@@ -8,7 +8,7 @@ const props = defineProps<{
 }>();
 
 const todoStore = useTodoStore();
-const deleteTodo = (id: number) => todoStore.remove(id);
+const deleteTodo = (id: string) => todoStore.remove(id);
 
 const updateTodoDone = (todo: Todo) => {
   const currentState = todo.done;
