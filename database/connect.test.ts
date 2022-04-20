@@ -1,5 +1,4 @@
-import { Connection } from "mysql2";
-import Query from "mysql2/typings/mysql/lib/protocol/sequences/Query";
+import { Connection, QueryError } from "mysql2";
 import {
   describe,
   test,
@@ -25,7 +24,7 @@ describe('Database Connection', () => {
   })
 
   test('successfully connects', (done) => {
-    connection.ping((err: Query.QueryError) => {
+    connection.ping((err: QueryError) => {
       expect(err).toBeUndefined()
       return done();
     })
