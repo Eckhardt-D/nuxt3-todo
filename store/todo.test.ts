@@ -9,6 +9,10 @@ import {
 } from "vitest";
 import { useTodoStore } from "./todo";
 
+function getFirstId(store: ReturnType<typeof useTodoStore>) {
+  return store.items[0].id;
+}
+
 beforeAll(() => {
   setActivePinia(createPinia());
 });
@@ -45,7 +49,7 @@ describe("useTodoStore", () => {
 
     expect(store.items).toStrictEqual([
       {
-        id: 0,
+        id: expect.any(String),
         label: "Clean Home",
         done: false,
         createdAt: expect.any(Date),
@@ -59,7 +63,7 @@ describe("useTodoStore", () => {
       label: "Clean Home",
     });
 
-    const id = 0;
+    const id = getFirstId(store);
 
     const item = store.getTodoById(id);
     expect(item.label).toBe("Clean Home");
@@ -95,21 +99,21 @@ describe("useTodoStore", () => {
 
   test("deletes a todo", () => {
     store.add({ label: "Delete Me" });
-    const id = 0;
+    const id = getFirstId(store);
     store.remove(id);
     expect(store.items).toStrictEqual([]);
   });
 
   test("updates a todo label", () => {
     store.add({ label: "Edit Me" });
-    const id = 0;
+    const id = getFirstId(store);
     store.update(id, { label: "Edited" });
     expect(store.getTodoById(id).label).toBe("Edited");
   });
 
   test("updates a todo done", () => {
     store.add({ label: "Edit Me" });
-    const id = 0;
+    const id = getFirstId(store);
     store.update(id, { done: true });
     expect(store.getTodoById(id).done).toBe(true);
   });

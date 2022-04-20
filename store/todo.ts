@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { v4 as uuid } from "uuid";
 
 export interface Todo {
-  id: number;
+  id: string;
   label: string;
   done: boolean;
   createdAt: Date;
@@ -30,7 +30,7 @@ const state = (): TodoState => ({
 
 const getters = {
   getTodoById: (state: TodoState) => {
-    return (id) =>
+    return (id: string) =>
       state.items.find((item) => !!item && (item as Todo).id === id);
   },
   getSortedTodos: (state: TodoState) => {
@@ -58,10 +58,10 @@ export const useTodoStore = defineStore("todoStore", {
 
       this.items.push(itemToAdd);
     },
-    remove(id: number) {
+    remove(id: string) {
       this.items = this.items.filter((item) => item.id !== id);
     },
-    update(id: number, update: TodoUpdate) {
+    update(id: string, update: TodoUpdate) {
       const items = this.items as Todos;
       const index = items.findIndex(
         (item) => !!item && (item as Todo).id === id
