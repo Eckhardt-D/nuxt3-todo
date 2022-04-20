@@ -1,31 +1,19 @@
-# Nuxt 3 Todo App
+# Development Notes
 
-This is the source code for Kaizen Code's Nuxt3 TDD todo app video. Live version is [here](https://nuxt3-todo.vercel.app/);
+Adding a database
 
-```bash
-git clone https://github.com/Eckhardt-D/nuxt3-todo.git
-```
+- Sign up at https://app.planetscale.com/
+- Create a new database and copy the DATABASE_URL to .env
+- Promote the new database to production immediately
 
-## Install
+## Making Schema Changes with PlanetScale and Prisma
 
-```bash
-cd nuxt3-todo && yarn
-```
+- Create a new branch from main in the PlanetScale dashboard
+- Copy the connection string and replace in .env (keep your old one)
+- Define your Prisma schema `see prisma/schema.prisma`
+- Run the push
 
-## Develop
+        npx prisma db push
 
-```bash
-yarn dev
-```
-
-## Deploy
-
-```bash
-npm i -g vercel && vercel
-```
-
-Note for deploy you need to change the settings:
-
-- build directory: `.output`
-- build command: `nuxi build`
-- dev command: `nuxi dev`
+- Merge the dev branch in PlanetScale, delete the old branch
+- Change your connection uri back to the production uri
