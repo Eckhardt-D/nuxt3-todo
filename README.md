@@ -1,10 +1,10 @@
 # Development Notes
 
-Adding a database
+Adding a database (required).
 
 - Sign up at https://app.planetscale.com/
-- Create a new database and copy the DATABASE_URL to .env
-- Promote the new database to production immediately
+- Create a new database and copy the DATABASE_URL to .env of your prod environment
+- Promote the new database to production immediately in planetscale
 
 ## Making Schema Changes with PlanetScale and Prisma
 
@@ -22,7 +22,7 @@ Adding a database
 
         pscale branch create nuxt3-todos user-todos-add
 
-- Run the local PlanetScale proxy
+- Run the local PlanetScale proxy on the new branch
 
         pscale connect nuxt3-todos user-todos-add
 
@@ -31,10 +31,18 @@ Adding a database
 
         npx prisma db push
 
-- Merge the dev branch in PlanetScale, delete the old branch
+- Merge the dev branch in PlanetScale
 
         pscale deploy-request create nuxt3-todos user-todos-add
 
 - Deploy the schema changes (review in planetscale) - <num>: the number of the deploy request generated above
 
         pscale deploy-request deploy nuxt3-todos <num>
+
+- Delete the unused branch
+
+        pscale branch delete nuxt3-todos user-todos-add
+
+- List branches in PlanetScale
+
+        pscale branch list nuxt3-todos
