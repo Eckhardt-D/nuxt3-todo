@@ -1,8 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "test": "vitest run --coverage",
-    "dev": "nuxi dev",
+    "test": "concurrently \"pscale connect nuxt3-todos main\" \"vitest run --coverage\"",
+    "dev": "concurrently \"pscale connect nuxt3-todos main\" \"nuxi dev\"",
     "build": "nuxi build",
     "start": "node .output/server/index.mjs"
   },
@@ -10,6 +10,7 @@
     "@nuxtjs/tailwindcss": "5",
     "@types/uuid": "^8.3.4",
     "c8": "^7.11.0",
+    "concurrently": "^7.1.0",
     "nuxt3": "latest",
     "prisma": "^3.12.0",
     "vitest": "^0.6.0"
