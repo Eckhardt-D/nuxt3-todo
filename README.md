@@ -1,31 +1,48 @@
-# Nuxt 3 Todo App
+# Development Notes
 
-This is the source code for Kaizen Code's Nuxt3 TDD todo app video. Live version is [here](https://nuxt3-todo.vercel.app/);
+Adding a database (required).
 
-```bash
-git clone https://github.com/Eckhardt-D/nuxt3-todo.git
-```
+- Sign up at https://app.planetscale.com/
+- Create a new database and copy the DATABASE_URL to .env of your prod environment
+- Promote the new database to production immediately in planetscale
 
-## Install
+## Making Schema Changes with PlanetScale and Prisma
 
-```bash
-cd nuxt3-todo && yarn
-```
+- install the planetscale cli at https://planetscale.com/cli
 
-## Develop
+- login to your planetscale account
 
-```bash
-yarn dev
-```
+        pscale auth login
 
-## Deploy
+- Copy the env from dist env
 
-```bash
-npm i -g vercel && vercel
-```
+        cp .env.dist .env
 
-Note for deploy you need to change the settings:
+- Create a new branch from main in PlanetScale
 
-- build directory: `.output`
-- build command: `nuxi build`
-- dev command: `nuxi dev`
+        pscale branch create nuxt3-todos user-todos-add
+
+- Run the local PlanetScale proxy on the new branch
+
+        pscale connect nuxt3-todos user-todos-add
+
+- Define your Prisma schema `see prisma/schema.prisma`
+- Run the push
+
+        npx prisma db push
+
+- Merge the dev branch in PlanetScale
+
+        pscale deploy-request create nuxt3-todos user-todos-add
+
+- Deploy the schema changes (review in planetscale) - <num>: the number of the deploy request generated above
+
+        pscale deploy-request deploy nuxt3-todos <num>
+
+- Delete the unused branch
+
+        pscale branch delete nuxt3-todos user-todos-add
+
+- List branches in PlanetScale
+
+        pscale branch list nuxt3-todos

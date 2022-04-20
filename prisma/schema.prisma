@@ -1,0 +1,30 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model Todo {
+  id        String   @id
+  ownerId   String
+  label     String
+  done      Boolean  @default(false)
+  createdAt DateTime
+  updatedAt DateTime
+  User      User     @relation(fields: [ownerId], references: [id])
+}
+
+model User {
+  id       String @id
+  email    String @unique
+  password String
+  todos    Todo[]
+}
