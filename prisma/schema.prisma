@@ -23,9 +23,8 @@ model Todo {
 }
 
 model User {
-  id       String  @id
-  email    String  @unique
-  name     String?
+  id       String @id
+  email    String @unique
   password String
   todos    Todo[]
 }
