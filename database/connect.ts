@@ -1,10 +1,7 @@
 import {PrismaClient} from '@prisma/client';
 
-export interface ConnectionOptions {
-  databaseUrl: string;
-}
 
-export const connect = async (options: ConnectionOptions): Promise<PrismaClient> => {
+export const connect = (): PrismaClient => {
   return new PrismaClient();
 }
 

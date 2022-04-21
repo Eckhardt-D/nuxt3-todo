@@ -4,7 +4,6 @@ import {
   describe,
   test,
   expect,
-  beforeAll,
   beforeEach,
   afterEach,
 } from "vitest";
@@ -14,10 +13,8 @@ import {connect, disconnect} from './connect';
 describe('Database Connection', () => {
   let connection: PrismaClient;
   
-  beforeEach(async () => {
-    connection = await connect({
-      databaseUrl: process.env.DATABASE_URL,
-    })
+  beforeEach(() => {
+    connection = connect()
   })
 
   afterEach(async () => {
