@@ -1,19 +1,13 @@
-import {createConnection, Connection} from 'mysql2';
-import * as dotenv from 'dotenv';
-import {join} from 'path';
-
-dotenv.config({
-  path: join(__dirname, '../.env'),
-});
+import {PrismaClient} from '@prisma/client';
 
 export interface ConnectionOptions {
   databaseUrl: string;
 }
 
-export const connect = async (options: ConnectionOptions): Promise<Connection> => {
-  return createConnection(options.databaseUrl);
+export const connect = async (options: ConnectionOptions): Promise<PrismaClient> => {
+  return new PrismaClient();
 }
 
-export const disconnect = (connection: Connection): void => {
-  return connection.destroy()
+export const disconnect = async (connection: PrismaClient): Promise<void> => {
+  return connection.$disconnect()
 }

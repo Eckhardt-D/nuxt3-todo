@@ -1,4 +1,5 @@
-import { Connection, QueryError } from "mysql2";
+
+import { PrismaClient } from "@prisma/client";
 import {
   describe,
   test,
@@ -11,7 +12,7 @@ import {
 import {connect, disconnect} from './connect';
 
 describe('Database Connection', () => {
-  let connection: Connection;
+  let connection: PrismaClient;
   
   beforeEach(async () => {
     connection = await connect({
@@ -19,14 +20,11 @@ describe('Database Connection', () => {
     })
   })
 
-  afterEach(() => {
-    disconnect(connection);
+  afterEach(async () => {
+    await disconnect(connection);
   })
 
-  test('successfully connects', (done) => {
-    connection.ping((err: QueryError) => {
-      expect(err).toBeUndefined()
-      return done();
-    })
+  test('successfully connects', () => {
+    expect(connection).toBeInstanceOf(PrismaClient);
   })
 })

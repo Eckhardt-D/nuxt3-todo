@@ -1,5 +1,9 @@
 # Development Notes
 
+Note: for local development make sure your database is running first in another terminal (see below for more info):
+
+        pscale connect nuxt3-todos main
+
 Adding a database (required).
 
 - Sign up at https://app.planetscale.com/
