@@ -1,6 +1,6 @@
-import * as Joi from "joi";
+import Joi from "joi";
+import Prisma from "@prisma/client";
 import * as bcrypt from "bcrypt";
-import { Prisma } from "@prisma/client";
 import { v4 as uuid } from "uuid";
 import { connect } from "../database";
 
@@ -45,7 +45,7 @@ export class Users {
         email: response.email,
       };
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error instanceof Prisma.Prisma.PrismaClientKnownRequestError) {
         // Reach into error to check if duplicate.
         if (error.code === "P2002") {
           throw new Error(`A user with email ${params.email} already exists.`);
