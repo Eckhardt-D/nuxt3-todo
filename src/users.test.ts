@@ -13,7 +13,7 @@ import { Users, UserModel } from "./users";
 describe("Users - add", () => {
   const users = new Users();
 
-  afterAll(async () => {
+  afterEach(async () => {
     await UserModel.deleteMany();
   });
 
@@ -135,6 +135,12 @@ describe("Users - add", () => {
   });
 
   test("throws if duplicate email", async () => {
+    await users.add({
+      email: "test@test.com",
+      password: "password",
+      passwordConfirm: "password",
+    });
+
     await expect(
       users.add({
         email: "test@test.com",

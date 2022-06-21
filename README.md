@@ -50,3 +50,9 @@ Adding a database (required).
 - List branches in PlanetScale
 
         pscale branch list nuxt3-todos
+
+## Issues with DATABASE_URL ?
+
+Add the .env file and run
+
+        npx prisma generate

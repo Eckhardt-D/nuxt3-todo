@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { v4 as uuid } from "uuid";
+import { ResponseShape } from "~~/src/helpers";
 
 export interface Todo {
   id: string;
@@ -45,28 +45,47 @@ export const useTodoStore = defineStore("todoStore", {
   state,
   getters,
   actions: {
-    add(todo: TodoAdd) {
-      const id = uuid();
+    async add(todo: TodoAdd) {
+      const response = (await $fetch("/api/todo/todos", {
+        method: "POST",
+        body: todo,
+      })) as ResponseShape;
 
-      const itemToAdd = {
-        id,
-        ...todo,
-        done: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      this.items.push(itemToAdd);
+      this.items.push(response.data);
     },
-    remove(id: string) {
+    async remove(id: string) {
       this.items = this.items.filter((item) => item.id !== id);
+
+      await $fetch("/api/todo/todos", {
+        method: "DELETE",
+        body: {
+          id,
+        },
+      });
     },
-    update(id: string, update: TodoUpdate) {
+    async update(id: string, update: TodoUpdate) {
       const items = this.items as Todos;
       const index = items.findIndex(
         (item) => !!item && (item as Todo).id === id
       );
+
       items[index] = { ...items[index], ...update, updatedAt: new Date() };
+      await $fetch("/api/todo/todos", {
+        method: "PUT",
+        body: {
+          id,
+          ...update,
+        },
+      });
+    },
+    async fetchTodos() {
+      const response = (await $fetch("/api/todo/todos", {
+        headers: useRequestHeaders(["cookie"]),
+      })) as ResponseShape;
+
+      if (response.data !== null) {
+        this.items = response.data;
+      }
     },
   },
 });

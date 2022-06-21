@@ -1,3 +1,3 @@
-import { userCreateRoute } from "~~/src/users.routes"
+import { userCreateRoute } from "~~/src/users.routes";
 
-export default defineEventHandler(userCreateRoute); 
+export default defineEventHandler(userCreateRoute);
