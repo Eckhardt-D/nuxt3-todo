@@ -1,8 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "test": "vitest run --coverage",
-    "dev": "nuxi dev",
+    "test": "concurrently \"pscale connect nuxt3-todos test\" \"vitest run --coverage\"",
+    "dev": "concurrently \"pscale connect nuxt3-todos test\" \"nuxi dev\"",
     "build": "nuxi build",
     "start": "node .output/server/index.mjs"
   },
