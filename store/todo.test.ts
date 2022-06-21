@@ -6,6 +6,7 @@ import {
   beforeAll,
   beforeEach,
   afterEach,
+  afterAll,
 } from "vitest";
 import { useTodoStore } from "./todo";
 
@@ -15,6 +16,26 @@ function getFirstId(store: ReturnType<typeof useTodoStore>) {
 
 beforeAll(() => {
   setActivePinia(createPinia());
+
+  // @ts-ignore
+  global.$fetch = async () => {
+    return {
+      data: {
+        id: "1234",
+        label: "Clean Home",
+        done: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    };
+  };
+
+  // @ts-ignore
+  global.useRequestHeaders = () => "cookier";
+});
+
+afterAll(() => {
+  global.$fetch = $fetch;
 });
 
 describe("initializes", () => {
@@ -42,8 +63,8 @@ describe("useTodoStore", () => {
     expect(store.items).toStrictEqual([]);
   });
 
-  test("adds a todo", () => {
-    store.add({
+  test("adds a todo", async () => {
+    await store.add({
       label: "Clean Home",
     });
 
@@ -58,14 +79,12 @@ describe("useTodoStore", () => {
     ]);
   });
 
-  test("gets todo by id", () => {
-    store.add({
+  test("gets todo by id", async () => {
+    await store.add({
       label: "Clean Home",
     });
 
-    const id = getFirstId(store);
-
-    const item = store.getTodoById(id);
+    const item = store.getTodoById("1234");
     expect(item.label).toBe("Clean Home");
   });
 
@@ -97,24 +116,42 @@ describe("useTodoStore", () => {
     expect(store.items[0].createdAt.getFullYear()).toBe(2021);
   });
 
-  test("deletes a todo", () => {
-    store.add({ label: "Delete Me" });
+  test("deletes a todo", async () => {
+    await store.add({ label: "Delete Me" });
     const id = getFirstId(store);
     store.remove(id);
     expect(store.items).toStrictEqual([]);
   });
 
-  test("updates a todo label", () => {
-    store.add({ label: "Edit Me" });
+  test("updates a todo label", async () => {
+    await store.add({ label: "Edit Me" });
     const id = getFirstId(store);
-    store.update(id, { label: "Edited" });
+    await store.update(id, { label: "Edited" });
     expect(store.getTodoById(id).label).toBe("Edited");
   });
 
-  test("updates a todo done", () => {
-    store.add({ label: "Edit Me" });
+  test("updates a todo done", async () => {
+    await store.add({ label: "Edit Me" });
     const id = getFirstId(store);
-    store.update(id, { done: true });
+    await store.update(id, { done: true });
     expect(store.getTodoById(id).done).toBe(true);
+  });
+
+  test("fetches todos", async () => {
+    // @ts-ignore
+    global.$fetch = () => ({
+      data: [
+        {
+          id: "1234",
+          label: "Clean Home",
+          done: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+    });
+
+    await store.fetchTodos();
+    expect(store.items.length).toBeGreaterThan(0);
   });
 });

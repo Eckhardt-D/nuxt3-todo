@@ -1,19 +1,12 @@
-import {
-  describe,
-  test,
-  expect,
-  beforeAll,
-  beforeEach,
-  afterEach,
-  afterAll,
-  spyOn,
-} from "vitest";
+import { describe, test, expect, afterEach, spyOn } from "vitest";
+import { TodoModel } from "./todos";
 import { Users, UserModel } from "./users";
 
 describe("Users - add", () => {
   const users = new Users();
 
   afterEach(async () => {
+    await TodoModel.deleteMany();
     await UserModel.deleteMany();
   });
 
