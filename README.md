@@ -1,5 +1,9 @@
 # Development Notes
 
+Note: for local development make sure your database is running first in another terminal (see below for more info):
+
+        pscale connect nuxt3-todos main
+
 Adding a database (required).
 
 - Sign up at https://app.planetscale.com/
@@ -46,3 +50,9 @@ Adding a database (required).
 - List branches in PlanetScale
 
         pscale branch list nuxt3-todos
+
+## Issues with DATABASE_URL ?
+
+Add the .env file and run
+
+        npx prisma generate

@@ -1,9 +1,9 @@
-import { Connection, QueryError } from "mysql2";
+
+import { PrismaClient } from "@prisma/client";
 import {
   describe,
   test,
   expect,
-  beforeAll,
   beforeEach,
   afterEach,
 } from "vitest";
@@ -11,22 +11,17 @@ import {
 import {connect, disconnect} from './connect';
 
 describe('Database Connection', () => {
-  let connection: Connection;
+  let connection: PrismaClient;
   
-  beforeEach(async () => {
-    connection = await connect({
-      databaseUrl: process.env.DATABASE_URL,
-    })
+  beforeEach(() => {
+    connection = connect()
   })
 
-  afterEach(() => {
-    disconnect(connection);
+  afterEach(async () => {
+    await disconnect(connection);
   })
 
-  test('successfully connects', (done) => {
-    connection.ping((err: QueryError) => {
-      expect(err).toBeUndefined()
-      return done();
-    })
+  test('successfully connects', () => {
+    expect(connection).toBeInstanceOf(PrismaClient);
   })
 })

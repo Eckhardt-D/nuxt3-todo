@@ -2,6 +2,7 @@
 const props = defineProps<{
   modelValue: string;
   error: boolean;
+  loading: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -35,10 +36,11 @@ const localTodoValue = computed({
       @keypress.enter="$emit('save')"
     />
     <button
-      class="w-3/12 py-2 ml-2 rounded border border-gray-300 hover:bg-green-100 transition-all duration-200"
+      class="w-3/12 py-2 ml-2 rounded border border-gray-300 hover:bg-green-100 transition-all duration-200 disabled:bg-gray-400 disabled:text-white"
+      :disabled="loading"
       @click="$emit('save')"
     >
-      Add
+      {{ loading ? "Loading..." : "Add" }}
     </button>
   </div>
 </template>
