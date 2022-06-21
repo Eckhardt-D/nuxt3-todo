@@ -1,5 +1,4 @@
 import { CompatibilityEvent } from "h3";
-import { UserLoginOptions } from "~~/store/user";
 import { useAuthRedirect } from "./helpers";
 import { UserAddOptions } from "./users";
 import { createUser, loginUser } from "./users.service";
@@ -26,10 +25,12 @@ export const userCreateRoute = async (event: CompatibilityEvent) => {
   }
 };
 
-export const userLoginRoute = async (event: CompatibilityEvent) => {
+export const userLoginRoute = async (
+  event: CompatibilityEvent
+): Promise<{ data: string | null; error: string | null }> => {
   const body = await useBody(event);
 
-  const options: UserLoginOptions = {
+  const options = {
     email: body.email,
     password: body.password,
   };
