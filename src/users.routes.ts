@@ -1,9 +1,11 @@
 import { CompatibilityEvent } from "h3";
-import { useAuthRedirect } from "./helpers";
+import { ApiResponse, useAuthRedirect } from "./helpers";
 import { UserAddOptions } from "./users";
 import { createUser, loginUser } from "./users.service";
 
-export const userCreateRoute = async (event: CompatibilityEvent) => {
+export const userCreateRoute = async (
+  event: CompatibilityEvent
+): Promise<ApiResponse> => {
   const body = await useBody(event);
 
   const options: UserAddOptions = {
@@ -27,7 +29,7 @@ export const userCreateRoute = async (event: CompatibilityEvent) => {
 
 export const userLoginRoute = async (
   event: CompatibilityEvent
-): Promise<{ data: string | null; error: string | null }> => {
+): Promise<ApiResponse> => {
   const body = await useBody(event);
 
   const options = {

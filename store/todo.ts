@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ResponseShape } from "~~/src/helpers";
+import { ApiResponse } from "~~/src/helpers";
 
 export interface Todo {
   id: string;
@@ -49,7 +49,7 @@ export const useTodoStore = defineStore("todoStore", {
       const response = (await $fetch("/api/todo/todos", {
         method: "POST",
         body: todo,
-      })) as ResponseShape;
+      })) as ApiResponse;
 
       this.items.push(response.data);
     },
@@ -81,7 +81,7 @@ export const useTodoStore = defineStore("todoStore", {
     async fetchTodos() {
       const response = (await $fetch("/api/todo/todos", {
         headers: useRequestHeaders(["cookie"]),
-      })) as ResponseShape;
+      })) as ApiResponse;
 
       if (response.data !== null) {
         this.items = response.data;

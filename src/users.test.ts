@@ -1,11 +1,49 @@
-import { describe, test, expect, afterEach, spyOn } from "vitest";
+import { describe, test, expect, afterAll, spyOn, vi, afterEach } from "vitest";
 import { TodoModel } from "./todos";
 import { Users, UserModel } from "./users";
+import bcrypt from "bcrypt";
+
+describe("isValidPassword", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test("returns false if password is invalid", async () => {
+    const result = await Users.isValidPassword({
+      password: "password",
+      hash: "password",
+    });
+
+    expect(result).toBe(false);
+  });
+
+  test("returns false if error occurred", async () => {
+    // const mock = vi.spyOn('')
+
+    const result = await Users.isValidPassword({
+      password: "password",
+      hash: "error",
+    });
+
+    expect(result).toBe(false);
+  });
+
+  test("returns true if password is valid", async () => {
+    const hash = await bcrypt.hash("password", 10);
+
+    const result = await Users.isValidPassword({
+      password: "password",
+      hash,
+    });
+
+    expect(result).toBe(true);
+  });
+});
 
 describe("Users - add", () => {
   const users = new Users();
 
-  afterEach(async () => {
+  afterAll(async () => {
     await TodoModel.deleteMany();
     await UserModel.deleteMany();
   });
@@ -128,12 +166,6 @@ describe("Users - add", () => {
   });
 
   test("throws if duplicate email", async () => {
-    await users.add({
-      email: "test@test.com",
-      password: "password",
-      passwordConfirm: "password",
-    });
-
     await expect(
       users.add({
         email: "test@test.com",

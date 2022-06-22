@@ -4,7 +4,6 @@ import * as bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 import JWT from "jsonwebtoken";
 import { connect } from "../database";
-import { UserLoginOptions } from "~~/store/user";
 
 const TOKEN_EXPIRY_DAYS = 7;
 
@@ -27,6 +26,11 @@ const userAddOptionsSchema = Joi.object({
   passwordConfirm: Joi.string().valid(Joi.ref("password")).required(),
 }).required();
 
+export interface UserLoginOptions {
+  email: string;
+  password: string;
+}
+
 const userLoginOptionsSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().max(36).required(),
@@ -48,7 +52,7 @@ export class Users {
     return bcrypt.hash(input, saltRounds);
   }
 
-  static async isValidPassword(options: IsValidPasswordOptions) {
+  static async isValidPassword(options: IsValidPasswordOptions): Promise<boolean> {
     const params = (await isValidPasswordOptionsSchema.validateAsync(
       options
     )) as IsValidPasswordOptions;
@@ -60,7 +64,7 @@ export class Users {
     }
   }
 
-  private static createToken(user: User) {
+  private static createToken(user: User): string | null {
     try {
       return JWT.sign(user, process.env.JWT_TOKEN_SECRET, {
         expiresIn: `${TOKEN_EXPIRY_DAYS}d`,
@@ -87,7 +91,7 @@ export class Users {
     }
   }
 
-  async add(options: UserAddOptions) {
+  async add(options: UserAddOptions): Promise<User> {
     const params = (await userAddOptionsSchema.validateAsync(
       options
     )) as UserAddOptions;
@@ -118,7 +122,7 @@ export class Users {
     }
   }
 
-  async login(options: UserLoginOptions) {
+  async login(options: UserLoginOptions): Promise<{token: string; tokenExpiryInDays: number}> {
     const params = (await userLoginOptionsSchema.validateAsync(
       options
     )) as UserLoginOptions;

@@ -1,4 +1,4 @@
-import { UserLoginOptions } from "~~/store/user";
+import { UserLoginOptions } from "./users";
 import { Users, UserAddOptions } from "./users";
 
 export const createUser = async (options: UserAddOptions) => {
