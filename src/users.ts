@@ -52,13 +52,16 @@ export class Users {
     return bcrypt.hash(input, saltRounds);
   }
 
-  static async isValidPassword(options: IsValidPasswordOptions): Promise<boolean> {
+  static async isValidPassword(
+    options: IsValidPasswordOptions
+  ): Promise<boolean> {
     const params = (await isValidPasswordOptionsSchema.validateAsync(
       options
     )) as IsValidPasswordOptions;
 
     try {
-      return bcrypt.compare(params.password, params.hash);
+      return await bcrypt.compare(params.password, params.hash);
+      /* c8 ignore next 3 */
     } catch (error) {
       return false;
     }
@@ -122,7 +125,9 @@ export class Users {
     }
   }
 
-  async login(options: UserLoginOptions): Promise<{token: string; tokenExpiryInDays: number}> {
+  async login(
+    options: UserLoginOptions
+  ): Promise<{ token: string; tokenExpiryInDays: number }> {
     const params = (await userLoginOptionsSchema.validateAsync(
       options
     )) as UserLoginOptions;
@@ -135,7 +140,7 @@ export class Users {
       throw new Error("Invalid login, please check your details.");
     }
 
-    const isValidPassword = Users.isValidPassword({
+    const isValidPassword = await Users.isValidPassword({
       password: params.password,
       hash: user.password,
     });

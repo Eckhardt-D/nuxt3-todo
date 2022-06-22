@@ -1,28 +1,22 @@
-import { describe, test, expect, afterAll, spyOn, vi, afterEach } from "vitest";
+import {
+  describe,
+  test,
+  expect,
+  afterAll,
+  vi,
+  afterEach,
+  beforeAll,
+} from "vitest";
 import { TodoModel } from "./todos";
-import { Users, UserModel } from "./users";
+import { User, Users, UserModel } from "./users";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 describe("isValidPassword", () => {
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
   test("returns false if password is invalid", async () => {
     const result = await Users.isValidPassword({
       password: "password",
       hash: "password",
-    });
-
-    expect(result).toBe(false);
-  });
-
-  test("returns false if error occurred", async () => {
-    // const mock = vi.spyOn('')
-
-    const result = await Users.isValidPassword({
-      password: "password",
-      hash: "error",
     });
 
     expect(result).toBe(false);
@@ -40,10 +34,75 @@ describe("isValidPassword", () => {
   });
 });
 
+describe("createToken", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test("returns null if error occurred", () => {
+    const mock = vi
+      .spyOn(jwt, "sign")
+      .mockImplementationOnce((payload, secret, callback) => {
+        throw new Error("error");
+      });
+
+    // @ts-ignore:TS2431
+    const token = Users.createToken({
+      id: "1234",
+      email: "test@test.com",
+    });
+
+    expect(mock).toHaveBeenCalled();
+    expect(token).toBeNull();
+  });
+
+  test("returns a token", () => {
+    // @ts-ignore:TS2431
+    const token = Users.createToken({
+      id: "1234",
+      email: "test@test.com",
+    });
+
+    expect(token.length).toBeGreaterThan(0);
+  });
+});
+
+describe("getUserFromVerificationToken", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test("returns undefined if an error occurred", async () => {
+    const mock = vi.spyOn(jwt, "verify").mockImplementationOnce(() => {
+      throw new Error();
+    });
+
+    const result = await Users.getUserFromVerificationToken("1234");
+
+    expect(mock).toHaveBeenCalled();
+    expect(result).toBeUndefined();
+  });
+
+  test("returns a user", async () => {
+    // @ts-ignore:TS2431
+    const token = Users.createToken({
+      id: "1234",
+      email: "test@test.com",
+    });
+
+    const result = await Users.getUserFromVerificationToken(token);
+    expect(result).toStrictEqual({
+      id: "1234",
+      email: "test@test.com",
+    });
+  });
+});
+
 describe("Users - add", () => {
   const users = new Users();
 
   afterAll(async () => {
+    vi.restoreAllMocks();
     await TodoModel.deleteMany();
     await UserModel.deleteMany();
   });
@@ -176,7 +235,13 @@ describe("Users - add", () => {
   });
 
   test("throws non-duplicate error if something goes wrong", async () => {
-    const mock = spyOn(UserModel, "create").mockRejectedValue("Error");
+    const originalCreate = UserModel.create;
+
+    const mocked = vi.fn(() => {
+      throw new Error("Error");
+    });
+
+    UserModel.create = mocked;
 
     await expect(
       users.add({
@@ -186,7 +251,101 @@ describe("Users - add", () => {
       })
     ).rejects.toThrow("Error");
 
-    expect(mock).toHaveBeenCalledTimes(1);
-    mock.mockClear();
+    expect(mocked).toHaveBeenCalledTimes(1);
+    UserModel.create = originalCreate;
+  });
+});
+
+describe("Users - login", () => {
+  let user: User;
+  const password = "password";
+
+  beforeAll(async () => {
+    user = await new Users().add({
+      email: "test@test.com",
+      password,
+      passwordConfirm: password,
+    });
+  });
+
+  afterAll(async () => {
+    await UserModel.deleteMany();
+  });
+
+  test("it throws if an error occurred", async () => {
+    // @ts-ignore:TS2554
+    await expect(new Users().login()).rejects.toThrow('"value" is required');
+  });
+
+  test("it throws if an error occurred", async () => {
+    // @ts-ignore:TS2554
+    await expect(new Users().login(null)).rejects.toThrow(
+      '"value" must be of type object'
+    );
+  });
+
+  test("it throws if an error occurred", async () => {
+    // @ts-ignore:TS2554
+    await expect(new Users().login({})).rejects.toThrow('"email" is required');
+  });
+
+  test("it throws if an error occurred", async () => {
+    // @ts-ignore:TS2554
+    await expect(new Users().login({ email: null })).rejects.toThrow(
+      '"email" must be a string'
+    );
+  });
+
+  test("it throws if an error occurred", async () => {
+    // @ts-ignore:TS2554
+    await expect(new Users().login({ email: "" })).rejects.toThrow(
+      '"email" is not allowed to be empty'
+    );
+  });
+
+  test("it throws if an error occurred", async () => {
+    // @ts-ignore:TS2554
+    await expect(new Users().login({ email: "test@test.com" })).rejects.toThrow(
+      '"password" is required'
+    );
+  });
+
+  test("it throws if an error occurred", async () => {
+    // @ts-ignore:TS2554
+    await expect(
+      new Users().login({ email: "test@test.com", password: null })
+    ).rejects.toThrow('"password" must be a string');
+  });
+
+  test("it throws if an error occurred", async () => {
+    // @ts-ignore:TS2554
+    await expect(
+      new Users().login({ email: "test@test.com", password: "" })
+    ).rejects.toThrow('"password" is not allowed to be empty');
+  });
+
+  test("it throws if an error occurred", async () => {
+    // @ts-ignore:TS2554
+    await expect(
+      new Users().login({ email: "test@test.com", password: "test" })
+    ).rejects.toThrow("Invalid login, ");
+  });
+
+  test("throws if user does not exist", async () => {
+    // @ts-ignore:TS2554
+    await expect(
+      new Users().login({ email: "test2@test2.com", password: "test" })
+    ).rejects.toThrow("Invalid login, ");
+  });
+
+  test("returns a token if user successfully logged in", async () => {
+    const result = await new Users().login({
+      email: "test@test.com",
+      password,
+    });
+    expect(result).toStrictEqual({
+      token: expect.any(String),
+      tokenExpiryInDays: expect.any(Number),
+    });
   });
 });
