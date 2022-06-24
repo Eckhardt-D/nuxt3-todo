@@ -49,7 +49,16 @@ export class Todos {
     const params = (await todosListByUserIdOptionsSchema.validateAsync(
       options
     )) as TodosListByUserIdOptions;
-    return UserModel.findFirst({ where: { id: params.id } }).todos();
+
+    const items = await UserModel.findFirst({
+      where: { id: params.id },
+    }).todos();
+
+    if (items === null) {
+      return undefined;
+    }
+
+    return items;
   }
 
   async add(options: TodosAddOptions): Promise<Todo | undefined> {

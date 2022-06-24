@@ -99,12 +99,12 @@ describe("getUserFromVerificationToken", () => {
 });
 
 describe("Users - add", () => {
+  const email = "test@test.com";
   const users = new Users();
 
   afterAll(async () => {
     vi.restoreAllMocks();
-    await TodoModel.deleteMany();
-    await UserModel.deleteMany();
+    await UserModel.delete({ where: { email } });
   });
 
   test("creates a hashed password", async () => {
@@ -269,6 +269,7 @@ describe("Users - login", () => {
   });
 
   afterAll(async () => {
+    await TodoModel.deleteMany();
     await UserModel.deleteMany();
   });
 
